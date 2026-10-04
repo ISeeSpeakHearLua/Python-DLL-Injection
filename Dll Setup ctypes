@@ -1,0 +1,35 @@
+import ctypes
+
+kernel32 = ctypes.CDLL("kernel32.dll")
+
+CreateProcess = kernel32.CreateProcessW
+VirtualAlloc = kernel32.VirtualAlloc
+Write = kernel32.WriteProcessMemory
+Handle = kernel32.GetCurrentProcess()
+
+VirtualAlloc.restype = ctypes.c_void_p
+
+address = VirtualAlloc(
+    None,
+    1024,
+    0x1000 | 0x2000,
+    0x04)
+
+print(hex(address))
+
+number = ctypes.c_int.from_address(address)
+
+
+READ_MEM.restype = ctypes.c_bool
+
+READ_MEM = kernel32.ReadProcessMemory
+buffer = ctypes.create_string_buffer(1024)
+bytes_read = ctypes.c_size_t()
+did_read = READ_MEM(
+    Handle,
+    address,
+    buffer,
+    5,
+    ctypes.byref(bytes_read))
+
+print(bytes_read)
